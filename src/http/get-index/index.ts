@@ -4,8 +4,12 @@ function getTgBotUrl(botToken: string): string {
   return `https://api.telegram.org/bot${botToken}`;
 }
 
-function sendMarkdownMessage(botToken: string, chatId: number, text: string) {
-  return fetch(`${getTgBotUrl(botToken)}/sendMessage`, {
+async function sendMarkdownMessage(
+  botToken: string,
+  chatId: number,
+  text: string
+) {
+  await fetch(`${getTgBotUrl(botToken)}/sendMessage`, {
     method: "POST",
     body: JSON.stringify({
       chat_id: chatId,
@@ -15,8 +19,12 @@ function sendMarkdownMessage(botToken: string, chatId: number, text: string) {
   });
 }
 
-function sendChatId(botToken: string, chatId: number) {
-  return sendMarkdownMessage(botToken, chatId, `Chat ID is \`${chatId}\``);
+async function sendChatId(botToken: string, chatId: number) {
+  try {
+    await sendMarkdownMessage(botToken, chatId, `Chat ID is \`${chatId}\``);
+  } catch (err) {
+    console.log(`Error sending chat id: ${err}`);
+  }
 }
 
 export async function handler(req: Dictionary) {
