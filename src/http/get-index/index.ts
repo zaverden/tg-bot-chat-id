@@ -9,7 +9,7 @@ async function sendMarkdownMessage(
   chatId: number,
   text: string
 ) {
-  await fetch(`${getTgBotUrl(botToken)}/sendMessage`, {
+  const response = await fetch(`${getTgBotUrl(botToken)}/sendMessage`, {
     method: "POST",
     body: JSON.stringify({
       chat_id: chatId,
@@ -17,6 +17,8 @@ async function sendMarkdownMessage(
       text,
     }),
   });
+  const responseText = await response.text();
+  console.log(`sendMessage response ${response.status}: ${responseText}`);
 }
 
 async function sendChatId(botToken: string, chatId: number) {
