@@ -25,9 +25,9 @@ let body = `
 
 export async function handler(req: object) {
   console.log("request", JSON.stringify(req));
-  console.log("env", JSON.stringify(Deno.env.toObject()));
-  const ip = await fetch("https://ifconfig.co/ip").then((r) => r.text());
-  console.log("ip", ip);
+  // console.log("env", JSON.stringify(Deno.env.toObject()));
+  // const ip = await fetch("https://ifconfig.co/ip").then((r) => r.text());
+  // console.log("ip", ip);
   return {
     statusCode: 200,
     headers: {
