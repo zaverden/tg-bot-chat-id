@@ -4,6 +4,11 @@ function getTgBotUrl(botToken: string): string {
   return `https://api.telegram.org/bot${botToken}`;
 }
 
+// headers: {
+//   'content-type': 'application/json; charset=utf8',
+//   'cache-control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
+// },
+
 async function sendMarkdownMessage(
   botToken: string,
   chatId: number,
@@ -11,6 +16,9 @@ async function sendMarkdownMessage(
 ) {
   const response = await fetch(`${getTgBotUrl(botToken)}/sendMessage`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
       chat_id: chatId,
       parse_mode: "MarkdownV2",
