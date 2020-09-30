@@ -33,6 +33,8 @@ export async function handler(req: Dictionary) {
     isNumber(body.message.chat.id)
   ) {
     await sendChatId(botToken, body.message.chat.id);
+  } else {
+    console.log("ignore request", JSON.stringify(body));
   }
   // console.log("env", JSON.stringify(Deno.env.toObject()));
   // const ip = await fetch("https://ifconfig.co/ip").then((r) => r.text());
