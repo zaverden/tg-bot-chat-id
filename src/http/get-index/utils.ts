@@ -9,10 +9,18 @@ export function getJsonBody(request: Dictionary): Dictionary {
   }
   try {
     const json = JSON.parse(request.body);
-    return typeof json === "object" && json != null ? json : {};
+    return isDictionary(json) ? json : {};
   } catch (err) {
     console.log(`Error parsing request.body: content: ${request.body}`);
     console.log(`Error parsing request.body: error: ${err}`);
     return {};
   }
+}
+
+export function isDictionary(obj: unknown): obj is Dictionary {
+  return typeof obj === "object" && obj != null && !Array.isArray(obj);
+}
+
+export function isNumber(obj: unknown): obj is number {
+  return typeof obj === "number";
 }
