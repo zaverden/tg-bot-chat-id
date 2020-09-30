@@ -4,37 +4,42 @@ function getTgBotUrl(botToken: string): string {
   return `https://api.telegram.org/bot${botToken}`;
 }
 
-// headers: {
-//   'content-type': 'application/json; charset=utf8',
-//   'cache-control': 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0'
-// },
+async function callTelegramApi(
+  botToken: string,
+  method: string,
+  body: Dictionary
+) {
+  const response = await fetch(`${getTgBotUrl(botToken)}/${method}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  if (response.status !== 200) {
+    const responseText = await response.text();
+    console.log(`sendMessage response ${response.status}: ${responseText}`);
+  }
+}
 
 async function sendMarkdownMessage(
   botToken: string,
   chatId: number,
   text: string
 ) {
-  const response = await fetch(`${getTgBotUrl(botToken)}/sendMessage`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      chat_id: chatId,
-      parse_mode: "MarkdownV2",
-      text,
-    }),
+  await callTelegramApi(botToken, "sendMessage", {
+    chat_id: chatId,
+    parse_mode: "MarkdownV2",
+    text,
   });
-  const responseText = await response.text();
-  console.log(`sendMessage response ${response.status}: ${responseText}`);
 }
 
 async function sendChatId(botToken: string, chatId: number) {
-  try {
-    await sendMarkdownMessage(botToken, chatId, `Chat ID is \`${chatId}\``);
-  } catch (err) {
-    console.log(`Error sending chat id: ${err}`);
-  }
+  await sendMarkdownMessage(botToken, chatId, `Chat ID is \`${chatId}\``);
+}
+
+async function leaveChat(botToken: string, chatId: number) {
+  await callTelegramApi(botToken, "leaveChat", { chat_id: chatId });
 }
 
 export async function handler(req: Dictionary) {
@@ -51,12 +56,13 @@ export async function handler(req: Dictionary) {
     isNumber(body.message.chat.id)
   ) {
     await sendChatId(botToken, body.message.chat.id);
+    if (body.message.chat.type !== "private") {
+      await sendMarkdownMessage(botToken, body.message.chat.id, "_fly away_");
+      await leaveChat(botToken, body.message.chat.id);
+    }
   } else {
     console.log("ignore request", JSON.stringify(body));
   }
-  // console.log("env", JSON.stringify(Deno.env.toObject()));
-  // const ip = await fetch("https://ifconfig.co/ip").then((r) => r.text());
-  // console.log("ip", ip);
   return {
     statusCode: 200,
     body: JSON.stringify({ ok: true }),
